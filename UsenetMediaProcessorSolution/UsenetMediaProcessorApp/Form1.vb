@@ -30,12 +30,6 @@ Public Class Form1
 
     Private Sub btnStart_Click(sender As Object, e As EventArgs) Handles btnStart.Click
         AddToLibrary()
-        'MoveFiles("e:\downloads", "e:\downloads720p", "*720p*.*")
-        'MoveFiles("e:\downloads", "e:\downloads_x265", "*x265*.*")
-        If chkX.Checked Then
-            ExtractArchives(NewsLeecherPath & "\alt.binaries.erotica", "e:\x")      ' part01.rar
-            ExtractArchives2(NewsLeecherPath & "\alt.binaries.erotica", "e:\x")     ' .rar
-        End If
         AddStatus("Done.")
         'Timer1.Enabled = True
     End Sub
@@ -308,7 +302,7 @@ Public Class Form1
         Return sFilename.Substring(0, sFilename.LastIndexOf("." & iYear.ToString & ".")).Replace(".", " ").Trim()
     End Function
 
-    Private Sub btnTest_Click(sender As Object, e As EventArgs) 
+    Private Sub btnTest_Click(sender As Object, e As EventArgs)
         TestArchive("N:\\171018_18\171018_18.part01.rar", "171018")
     End Sub
 
@@ -939,7 +933,6 @@ Public Class Form1
     End Sub
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles Me.Load
-        wc = New WebClient()
         Console.WriteLine(DateTime.Now.ToString())
 
         'Dim obj As Object = Nothing
@@ -947,10 +940,6 @@ Public Class Form1
         'If (obj IsNot Nothing) AndAlso obj.ToString() = "hello" Then
         '    MsgBox("test")
         'End If
-    End Sub
-
-    Private Sub wc_DownloadFileCompleted(sender As Object, e As AsyncCompletedEventArgs) Handles wc.DownloadFileCompleted
-
     End Sub
 
     Private Sub BtnMoveUnknown_Click(sender As Object, e As EventArgs) Handles btnMoveUnknown.Click
