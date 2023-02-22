@@ -25,6 +25,9 @@ Public Class Form1
     }
 
     Private NewsLeecherPath = "G:\NewsLeecher"
+    Private DownloadsFolder = "e:\downloads"
+    Private ListFolder = "e:\downloads\list"            ' storage for TV nfo files and TV files that don't have a matching nfo file yet
+    Private BackupFolder = "e:\downloads\backup\"
 
     Private WithEvents wc As WebClient
 
@@ -467,7 +470,7 @@ Public Class Form1
                         End If
                     End If
                     If bOK Then
-                        If ExtractArchive(sRarFilename, sPassword, "e:\downloads") Then
+                        If ExtractArchive(sRarFilename, sPassword, DownloadsFolder) Then
                             Directory.Delete(DirectoryName, True)
                         End If
                     End If
@@ -587,7 +590,7 @@ Public Class Form1
 
     Private Sub MoveFiles()
         AddStatus("MOVEFILES: Moving files...")
-        MoveFiles("e:\downloads\TV _ HD", "e:\downloads", "*.mkv")
+        MoveFiles(DownloadsFolder & "\TV _ HD", DownloadsFolder, "*.mkv")
         AddStatus("MOVEFILES: Complete.")
     End Sub
 
@@ -596,7 +599,7 @@ Public Class Form1
         For Each sFilename In Directory.GetFiles(SourceDirectory, Wildcard)
             Dim sDestFilename = Path.Combine(DestinationDirectory, Path.GetFileName(sFilename))
             If Not IsATVShow(Path.GetFileName(sFilename)) And Not IsAMovie(Path.GetFileName(sFilename)) Then
-                sDestFilename = Path.Combine(DestinationDirectory, SourceDirectory.Replace("e:\downloads\TV _ HD\", "") & ".mkv")
+                sDestFilename = Path.Combine(DestinationDirectory, SourceDirectory.Replace(DownloadsFolder & "\TV _ HD\", "") & ".mkv")
             End If
             AddStatus("Moving file: " & sFilename & " to " & sDestFilename)
             'If Not MoveFile(sFilename, sDestFilename) Then
@@ -609,7 +612,7 @@ Public Class Form1
             MoveFiles(DirectoryName, DestinationDirectory, Wildcard)
         Next
         'Try
-        '    If SourceDirectory <> "e:\downloads" Then
+        '    If SourceDirectory <> DownloadsFolder Then
         '        Directory.Delete(SourceDirectory, True)
         '    End If
         'Catch ex As Exception
@@ -790,7 +793,7 @@ Public Class Form1
                                 AddStatus("ERROR Moving File: " & LastError)
                             End If
                             ' add to backup
-                            If Not MoveFile(sFilename, Path.Combine("e:\backup\", Path.GetFileName(sDestFilename))) Then
+                            If Not MoveFile(sFilename, Path.Combine(BackupFolder, Path.GetFileName(sDestFilename))) Then
                                 AddStatus("ERROR Moving File: " & LastError)
                             End If
 
@@ -884,8 +887,8 @@ Public Class Form1
     ' match up first 8 characters, rename mkv file and remove leading 9 characters (with space)
     Private Sub ProcessDMCA()
         If Not Directory.Exists(txtPathname.Text) Then Return
-        ' move e:\downloads\########.mkv to e:\list
-        For Each sFilePath In Directory.GetFiles("e:\downloads", "*.mkv")
+        ' move DownloadsFolder\########.mkv to e:\list
+        For Each sFilePath In Directory.GetFiles(DownloadsFolder, "*.mkv")
             Dim sFilename = Path.GetFileName(sFilePath)
             If sFilename.Length = 12 Then
                 Dim sDestFilename = Path.Combine("e:\list", sFilename)
@@ -912,7 +915,7 @@ Public Class Form1
                 MoveFile(sFilePath, sDestFilename)
             End If
         Next
-        ' match numbers and rename files and move to e:\downloads
+        ' match numbers and rename files and move to downloads folder
         ' move n:\Newsleecher\alt.binaries.hdtv.x264\*.nfo to e:\list
         For Each sFilePath In Directory.GetFiles("e:\list", "*.nfo")
             Dim sFilename = Path.GetFileName(sFilePath)
@@ -924,7 +927,7 @@ Public Class Form1
                     Dim sProperMKVFilename = Path.Combine("e:\list", Path.GetFileName(sFilename).Substring(9)).Replace(".nfo", ".mkv")
                     ' rename from 18090102.mkv to Bull.2016.S03E06.Fool.Me.Twice.1080p.AMZN.WEB-DL.DD+5.1.H.264-AJP69.mkv
                     RenameFile(sMKVFilename, sProperMKVFilename)
-                    ' move e:\list\Bull.2016.S03E06.Fool.Me.Twice.1080p.AMZN.WEB-DL.DD+5.1.H.264-AJP69.mkv to e:\downloads
+                    ' move e:\list\Bull.2016.S03E06.Fool.Me.Twice.1080p.AMZN.WEB-DL.DD+5.1.H.264-AJP69.mkv to downloads folder
                     MoveFile(sProperMKVFilename, Path.Combine(txtPathname.Text, Path.GetFileName(sProperMKVFilename)))
                 End If
             End If
@@ -971,11 +974,7 @@ Public Class Form1
         'Timer1.Enabled = False
         ListBox1.Items.Clear()
         'btnNzbget.PerformClick()
-        ExtractArchives(NewsLeecherPath, "e:\downloads")
-        'ExtractArchives(NewsLeecherPath & "\alt.binaries.tv", "e:\downloads")
-        'ExtractArchives(NewsLeecherPath & "\alt.binaries.hdtv", "e:\downloads")
-        'ExtractArchives(NewsLeecherPath & "\alt.binaries.hdtv.x264", "e:\downloads")
-        'ExtractArchives(NewsLeecherPath & "\alt.binaries.hdtv.german", "e:\downloads")
+        ExtractArchives(NewsLeecherPath, DownloadsFolder)
         ProcessDMCA()
         'MoveFiles()
         AddStatus("Done.")
